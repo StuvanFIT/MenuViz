@@ -33,7 +33,7 @@ export default function HomeScreen() {
           activeOpacity={0.8}
         >
           <View style={styles.buttonContent}>
-            <Feather name="camera" size={24} color="#FFFFFF" />
+            <Feather name="camera" size={24} color="#0000000" />
             <Text style={styles.scanButtonText}>Scan Menu</Text>
           </View>
         </TouchableOpacity>
@@ -50,7 +50,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#253D2C", 
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 24,
@@ -67,34 +67,35 @@ const styles = StyleSheet.create({
   titleLine1: {
     fontSize: 40,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: "#000000",
     letterSpacing: -0.5,
   },
   titleLine2: {
     fontSize: 40,
     fontWeight: "700",
-    color: "#68BA7F", 
+    color: "#06C167",
     letterSpacing: -0.5,
   },
   description: {
     fontSize: 16,
-    color: "#CFFFDC", 
+    color: "#000000",
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 48,
     paddingHorizontal: 8,
+    opacity: 0.7,
   },
   scanButton: {
-    backgroundColor: "#2E6F40", 
+    backgroundColor: "#06C167",
     paddingVertical: 18,
     paddingHorizontal: 48,
-    borderRadius: 16,
+    borderRadius: 12,
     width: "100%",
     maxWidth: 340,
-    shadowColor: "#2E6F40",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
+    shadowColor: "#06C167",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
     elevation: 8,
   },
   buttonContent: {
@@ -104,16 +105,17 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   scanButtonText: {
-    color: "#FFFFFF",
+    color: "#000000",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
     letterSpacing: 0.5,
   },
   uploadText: {
     marginTop: 24,
     fontSize: 12,
-    color: "#68BA7F",
+    color: "#000000",
     fontWeight: "600",
     letterSpacing: 1.2,
+    opacity: 0.5,
   },
 });
