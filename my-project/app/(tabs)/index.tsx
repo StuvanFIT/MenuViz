@@ -6,67 +6,71 @@ import { parseMenuItemFromImage } from '@/services/geminiService';
 //icons
 import { Feather } from '@expo/vector-icons';
 
+const IMAGE_PICKER_CONFIG: ImagePicker.ImagePickerOptions = {
+  mediaTypes: ['images', 'videos'],
+  allowsEditing: true, 
+  aspect: [4, 3],
+  quality: 1,
+  base64: true,
+}
+
 
 export default function HomeScreen() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleScanMenu = async () => {
-    console.log("Scan menu pressed");
+  const requestPermission = async (type: string) => {
+    const permissionRequest = type === 'camera'
+      ? ImagePicker.requestCameraPermissionsAsync()
+      : ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    const result = await permissionRequest;
 
-    if (!permissionResult.granted) {
-      Alert.alert('Permission required', 'Permission to access the camera is required.');
-      return;
+    if (!result.granted) {
+      const message = type === 'camera'
+        ? 'Permission to access the camera is required.'
+        : 'Permission to access the media library is required.';
+      
+      Alert.alert('Permission required', message);
+      return false;
     }
 
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images', 'videos'],
-      allowsEditing: true, 
-      aspect: [4, 3],
-      quality: 1,
-      base64: true,
-    })
+    return true;
+  }
 
+  const processImage = async (imageResult: ImagePicker.ImagePickerResult) => {
+    if (imageResult.canceled) return;
 
-    if (!result.canceled) {
+    try {
       setLoading(true);
-      const menuItems = await parseMenuItemFromImage(result.assets[0].base64);
+      const menuItems = await parseMenuItemFromImage(imageResult.assets[0].base64);
       console.log(menuItems);
-      setLoading(false);
 
+    } catch (error) {
+      console.error('Error processing image:', error);
+      Alert.alert('Error', 'Failed to process the menu image. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUploadMenu = async () => {
-    console.log("Upload menu pressed");
+  const handleImagePicker = async (source: string) => {
+    console.log(`${source} pressed`);
 
-    //Ask user for permission to access library
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //request permission
+    const permissionResult = requestPermission(source);
+    if (!permissionResult) return;
 
-    if (!permissionResult.granted){
-      Alert.alert('Permission required', 'Permission to access the media library is required.');
-      return;
-    }
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-      base64: true,
-    });
+    //launch the appropriate image picker
+    const result = source === 'camera'
+      ? await ImagePicker.launchCameraAsync(IMAGE_PICKER_CONFIG)
+      : await ImagePicker.launchImageLibraryAsync(IMAGE_PICKER_CONFIG);
 
-    console.log(result);
+    await processImage(result);
+  }
 
-    if (!result.canceled) {
-      setLoading(true);
-      const menuItems = await parseMenuItemFromImage(result.assets[0].base64);
-      console.log(menuItems);
-      setLoading(false);
-
-    }
-  };
+  const handleScanMenu = () => handleImagePicker("camera");
+  const handleUploadMenu = () => handleImagePicker("library");
   
   if (loading) {
     return (
