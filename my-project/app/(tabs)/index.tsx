@@ -1,98 +1,119 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const handleScanMenu = () => {
+    console.log("Scan menu pressed");
+  };
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const handleUploadMenu = () => {
+    console.log("Upload menu pressed");
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.contentWrapper}>
+        {/* Header Section */}
+        <View style={styles.headerSection}>
+          <Text style={styles.titleLine1}>Stop guessing.</Text>
+          <Text style={styles.titleLine2}>Visualise.</Text>
+        </View>
+
+        {/* Description */}
+        <Text style={styles.description}>
+          Snap a photo of any menu and see exactly what the food looks like
+          before you order.
+        </Text>
+
+        {/* Scan Menu Button */}
+        <TouchableOpacity
+          style={styles.scanButton}
+          onPress={handleScanMenu}
+          activeOpacity={0.8}
+        >
+          <View style={styles.buttonContent}>
+            <Feather name="camera" size={24} color="#FFFFFF" />
+            <Text style={styles.scanButtonText}>Scan Menu</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Upload Option */}
+        <TouchableOpacity onPress={handleUploadMenu} activeOpacity={0.7}>
+          <Text style={styles.uploadText}>OR UPLOAD FROM GALLERY</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#253D2C", 
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  contentWrapper: {
+    width: "100%",
+    maxWidth: 400,
+    alignItems: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  headerSection: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  titleLine1: {
+    fontSize: 40,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    letterSpacing: -0.5,
+  },
+  titleLine2: {
+    fontSize: 40,
+    fontWeight: "700",
+    color: "#68BA7F", 
+    letterSpacing: -0.5,
+  },
+  description: {
+    fontSize: 16,
+    color: "#CFFFDC", 
+    textAlign: "center",
+    lineHeight: 24,
+    marginBottom: 48,
+    paddingHorizontal: 8,
+  },
+  scanButton: {
+    backgroundColor: "#2E6F40", 
+    paddingVertical: 18,
+    paddingHorizontal: 48,
+    borderRadius: 16,
+    width: "100%",
+    maxWidth: 340,
+    shadowColor: "#2E6F40",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  scanButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+  },
+  uploadText: {
+    marginTop: 24,
+    fontSize: 12,
+    color: "#68BA7F",
+    fontWeight: "600",
+    letterSpacing: 1.2,
   },
 });
