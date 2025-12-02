@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from "expo-image-picker";
+import { useRouter } from 'expo-router';
 import { parseMenuItemFromImage } from '@/services/geminiService';
 
 //icons
@@ -17,6 +18,7 @@ const IMAGE_PICKER_CONFIG: ImagePicker.ImagePickerOptions = {
 
 export default function HomeScreen() {
 
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const requestPermission = async (type: string) => {
@@ -46,9 +48,17 @@ export default function HomeScreen() {
       const menuItems = await parseMenuItemFromImage(imageResult.assets[0].base64);
       console.log(menuItems);
 
+      router.push({
+        pathname: "/menu-results",
+        params: {
+          menuItems: JSON.stringify(menuItems),
+          menuImage: imageResult.assets[0].uri
+        }
+      }); //navigate to menu results screen
+
     } catch (error) {
-      console.error('Error processing image:', error);
-      Alert.alert('Error', 'Failed to process the menu image. Please try again.');
+        console.error('Error processing image:', error);
+        Alert.alert('Error', 'Failed to process the menu image. Please try again.');
     } finally {
       setLoading(false);
     }
