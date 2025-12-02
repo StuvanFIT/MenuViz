@@ -2,8 +2,26 @@ import { GoogleGenAI, Type } from "@google/genai";
 import Constants from 'expo-constants';
 
 //Prompts
-import { parseMenuImagePrompt } from "@/prompts/prompts";
+import { generateMenuItemImagePrompt, parseMenuImagePrompt } from "@/prompts/prompts";
 import { MenuItem } from "@/types/type";
+
+
+
+/*
+NOTE: Gemini responses are structured like:
+
+response
+ └─ candidates[0]
+       └─ content
+            └─ parts: [
+                 { text: "something" },
+                 { inlineData: { mimeType: "...", data: "BASE64" } }
+               ]
+
+So the model may givemultiple parts and we have to search through all the parts to find the one that contains target data.
+For example, we might need to search through all the parts to retrieve the image data.
+*/
+
 
 
 const GEMINI_KEY = Constants.expoConfig?.extra?.GEMINI_API_KEY ?? "";
@@ -12,7 +30,7 @@ const getAI = () => new GoogleGenAI({apiKey: GEMINI_KEY});
 
 /*
 Parses menu item into structured data using Gemini 2.5 Flash
- */
+*/
 
 export const parseMenuItemFromImage = async (base64Image: string | null | undefined): Promise<MenuItem[]> => {
 
@@ -85,7 +103,37 @@ export const parseMenuItemFromImage = async (base64Image: string | null | undefi
 Generates an image for the specific dish using Gemini 2.5 Flash
 */
 
-export const generateMenuItemImage = () => {
+export const generateMenuItemImage = async (menuItem: MenuItem): Promise<string | null> => {
+
+    const ai = getAI();
+    const targetPrompt = generateMenuItemImagePrompt(menuItem);
+
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: {
+                parts: [
+                    { text: targetPrompt }
+                ]
+            },
+        })
+
+        //Iterate through all parts to retrieve image
+        //part.inlineData && part.inlineData.data is where the image is located
+        const parts = response.candidates?.[0]?.content?.parts;
+        if (parts){
+            for (const part of parts) {
+                if (part.inlineData && part.inlineData.data) {
+                    return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+                }
+            }
+        }
+        return null;
+
+    } catch (error) {
+        console.error(`Failed to generate an image for ${menuItem.name}:`,error);
+        return null;
+    }
 
 }
 
