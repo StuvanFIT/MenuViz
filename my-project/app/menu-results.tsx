@@ -1,15 +1,32 @@
+import { useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { MenuItem } from "@/types/type";
 import { Feather } from '@expo/vector-icons';
+import { generateMenuItemImage } from "@/services/geminiService";
 
 
 export default function MenuResultsScreen() {
     const params = useLocalSearchParams();
-    const menuItems: MenuItem[] = JSON.parse(params.menuItems as string);
+    const [menuItems, setMenuItems] = useState<MenuItem[]>(JSON.parse(params.menuItems as string));
 
-    const handleItemPress = () => {
+    const handleItemVisualisation = async (itemId: string) => {
+        console.log("ITEM PRESSED")
+        const itemIndex = menuItems.findIndex( index => index.id === itemId);
+        if (itemIndex === -1) return;
 
+        const currMenuItem = menuItems[itemIndex];
+
+        //Update Menu image status -> loading
+        setMenuItems(prev => prev.map(p => p.id === itemId ? {...p, imageStatus: 'loading'} : p));
+
+        const imageUrl = await generateMenuItemImage(currMenuItem);
+
+        setMenuItems(prev => prev.map(p => 
+            p.id === itemId 
+                ? { ...p, generatedImageUrl: imageUrl || undefined, imageStatus: imageUrl ? 'success' : 'error' } 
+                : p
+        ));
     }
 
     return (
@@ -22,7 +39,7 @@ export default function MenuResultsScreen() {
             renderItem={({ item }) => (
             <TouchableOpacity 
                 style={styles.menuCard}
-                onPress={() => handleItemPress()}
+                onPress={() => handleItemVisualisation(item.id)}
                 activeOpacity={0.7}
             >
                 {item.generatedImageUrl ? (
