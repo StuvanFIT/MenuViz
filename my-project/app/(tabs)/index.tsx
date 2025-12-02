@@ -1,15 +1,80 @@
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import * as ImagePicker from "expo-image-picker";
+import { parseMenuItemFromImage } from '@/services/geminiService';
+
+//icons
 import { Feather } from '@expo/vector-icons';
 
 
 export default function HomeScreen() {
-  const handleScanMenu = () => {
+
+  const [loading, setLoading] = useState(false);
+
+  const handleScanMenu = async () => {
     console.log("Scan menu pressed");
+
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the camera is required.');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true, 
+      aspect: [4, 3],
+      quality: 1,
+      base64: true,
+    })
+
+
+    if (!result.canceled) {
+      setLoading(true);
+      const menuItems = await parseMenuItemFromImage(result.assets[0].base64);
+      console.log(menuItems);
+      setLoading(false);
+
+    }
   };
 
-  const handleUploadMenu = () => {
+  const handleUploadMenu = async () => {
     console.log("Upload menu pressed");
+
+    //Ask user for permission to access library
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted){
+      Alert.alert('Permission required', 'Permission to access the media library is required.');
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      base64: true,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setLoading(true);
+      const menuItems = await parseMenuItemFromImage(result.assets[0].base64);
+      console.log(menuItems);
+      setLoading(false);
+
+    }
   };
+  
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Analysing and Reading menu...</Text>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -40,7 +105,7 @@ export default function HomeScreen() {
 
         {/* Upload Option */}
         <TouchableOpacity onPress={handleUploadMenu} activeOpacity={0.7}>
-          <Text style={styles.uploadText}>OR UPLOAD FROM GALLERY</Text>
+          <Text style={styles.uploadText}>OR UPLOAD FROM YOUR GALLERY</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -112,7 +177,7 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     marginTop: 24,
-    fontSize: 12,
+    fontSize: 16,
     color: "#000000",
     fontWeight: "600",
     letterSpacing: 1.2,

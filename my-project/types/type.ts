@@ -8,3 +8,9 @@ export interface MenuItem {
     generatedImageUrl?: string;
     imageStatus: 'idle' | 'loading' | 'success' | 'error';
 }
+
+export enum AppState {
+    HOME = 'HOME',
+    PROCESSING_MENU = 'PROCESSING_MENU',
+    MENU_VIEW = 'MENU_VIEW'
+}
