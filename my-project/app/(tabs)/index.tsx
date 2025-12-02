@@ -48,6 +48,12 @@ export default function HomeScreen() {
       const menuItems = await parseMenuItemFromImage(imageResult.assets[0].base64);
       console.log(menuItems);
 
+
+      if (menuItems.length === 0) {
+        Alert.alert("Could not analyse menu image. Please try again.");
+        return;
+      }
+
       router.push({
         pathname: "/menu-results",
         params: {
