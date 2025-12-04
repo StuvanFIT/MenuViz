@@ -1,14 +1,14 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { MenuItem } from "@/types/type";
+import { LoadingFallback } from "./loadingFallback";
 
 export function MenuCard({ item, onVisualise }: { item: MenuItem; onVisualise: (id: string) => void }) {
   const renderImageSection = () => {
     if (item.imageStatus === 'loading') {
       return (
         <View style={styles.imagePlaceholder}>
-          <ActivityIndicator size="large" color="#06C167" />
-          <Text style={styles.loadingText}>Dreaming up dish...</Text>
+            <LoadingFallback text="Dreaming up dish..." />
         </View>
       );
     }
@@ -76,7 +76,7 @@ export function MenuCard({ item, onVisualise }: { item: MenuItem; onVisualise: (
               {item.description}
             </Text>
           )}
-          <Text style={styles.itemPrice}>{item.price}</Text>
+          <Text style={styles.itemPrice}>{`$${item.price}`}</Text>
         </View>
 
         {/* Tags */}
@@ -123,12 +123,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-  },
   itemContent: {
     padding: 16,
   },
@@ -140,6 +134,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#000000',
     marginBottom: 6,
+    textTransform: "uppercase"
   },
   itemDescription: {
     fontSize: 14,

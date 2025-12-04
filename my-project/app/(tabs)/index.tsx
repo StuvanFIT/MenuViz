@@ -6,6 +6,7 @@ import { parseMenuItemFromImage } from '@/services/geminiService';
 
 //icons
 import { Feather } from '@expo/vector-icons';
+import { LoadingFallback } from '@/components/ui/loadingFallback';
 
 const IMAGE_PICKER_CONFIG: ImagePicker.ImagePickerOptions = {
   mediaTypes: ['images', 'videos'],
@@ -91,7 +92,7 @@ export default function HomeScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Analysing and Reading menu...</Text>
+        <LoadingFallback text="Analysing and Reading menu..."/>
       </View>
     )
   }
