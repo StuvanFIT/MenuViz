@@ -123,7 +123,6 @@ export const generateMenuItemImage = async (menuItem: MenuItem): Promise<string 
         const parts = response.candidates?.[0]?.content?.parts;
         if (parts){
             for (const part of parts) {
-                console.log(part)
                 if (part.inlineData && part.inlineData.data) {
                     return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
                 }

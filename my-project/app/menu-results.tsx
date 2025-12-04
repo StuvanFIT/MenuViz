@@ -2,8 +2,8 @@ import { useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { MenuItem } from "@/types/type";
-import { Feather } from '@expo/vector-icons';
 import { generateMenuItemImage } from "@/services/geminiService";
+import { MenuCard } from "@/components/ui/menu-card";
 
 
 export default function MenuResultsScreen() {
@@ -33,27 +33,10 @@ export default function MenuResultsScreen() {
         <View style={styles.container}>
         <FlatList
             data={menuItems}
-            keyExtractor={(item, index) => `${item.name}-${index}`}
-            numColumns={2}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => (
-            <TouchableOpacity 
-                style={styles.menuCard}
-                onPress={() => handleItemVisualisation(item.id)}
-                activeOpacity={0.7}
-            >
-                {item.generatedImageUrl ? (
-                    <Image source={{ uri: item.generatedImageUrl }} style={styles.itemImage} />
-                ) : (
-                <View style={styles.imagePlaceholder}>
-                    <Feather name="image" size={40} color="#ccc" />
-                </View>
-                )}
-                <View style={styles.itemInfo}>
-                <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
-                <Text style={styles.itemPrice}>{item.price}</Text>
-                </View>
-            </TouchableOpacity>
+              <MenuCard item={item} onVisualise={handleItemVisualisation} />
             )}
         />
         </View>
